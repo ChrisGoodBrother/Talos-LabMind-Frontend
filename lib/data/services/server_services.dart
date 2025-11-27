@@ -1,16 +1,20 @@
+import 'dart:async';
 import 'dart:developer';
-
+import 'dart:convert';
 import 'package:dio/dio.dart';
 
 class ServerServices {
-  Future<bool> isConnected() async {
+
+  StreamController<String> streamController = StreamController<String>.broadcast();
+  Stream<String> get stream => streamController.stream;
+
+  Future<bool> checkServerConnection() async {
     Dio dio = Dio(BaseOptions(baseUrl: 'http://localhost:5000'));
 
     try {
       final response = await dio.get('http://localhost:5000/status');
 
       if (response.statusCode == 200) {
-        //loadScripts();
         return true;
       } else {
         return false;
@@ -38,31 +42,56 @@ class ServerServices {
   }
 
   Future<void> runScript(String script) async {
-
-    if(script.isEmpty) {
+    if (script.isEmpty) {
       log("no script");
       return;
     }
 
-    //isrunning = true
-
     Dio dio = Dio(BaseOptions(baseUrl: 'http://localhost:5000'));
+    log(script);
 
     try {
       final response = await dio.post(
         'http://localhost:5000/run',
+        options: Options(
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          responseType: ResponseType.stream,
+        ),
         data: {
-          'scripts': script,
-        }
+          'script': script,
+        },
       );
 
-      if(response.statusCode == 200) {
-        log("running");
+      if (response.statusCode == 200) {
+        final responseStream = response.data.stream;
+
+        await for (final value in responseStream) {
+          String text;
+          text = utf8.decode(value);
+
+          streamController.add(text);
+        }
+
       }
     } catch (e) {
-      log("script run error");
-    } finally {
-      //isrunning = false
-    } 
+      //streamController.close();
+      rethrow;
+    }
+    //streamController.close();
+  }
+
+  Future<void> stopScript() async {
+    Dio dio = Dio(BaseOptions(baseUrl: 'http://localhost:5000'));
+
+    try {
+      await dio.post(
+        'http://localhost:5000/stop',
+      );
+      //show stop signal message
+    } catch (e) {
+      log("error stopping");
+    }
   }
 }

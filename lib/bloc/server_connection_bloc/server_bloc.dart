@@ -1,8 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lab_mind_frontend/bloc/server_event.dart';
-import 'package:lab_mind_frontend/bloc/server_state.dart';
+import 'package:lab_mind_frontend/bloc/server_connection_bloc/server_event.dart';
+import 'package:lab_mind_frontend/bloc/server_connection_bloc/server_state.dart';
 import 'package:lab_mind_frontend/data/services/server_services.dart';
 
 class ServerBloc extends Bloc<ServerEvent, ServerState> {
@@ -11,9 +11,10 @@ class ServerBloc extends Bloc<ServerEvent, ServerState> {
   ServerBloc(this.serverServices) : super(ServerDisconnectedState()) {
     on<CheckServerConnectionEvent>(
       (event, emit) async {
+        emit(ServerConnectingState());
         bool isConnected;
         try {
-          isConnected = await serverServices.isConnected();
+          isConnected = await serverServices.checkServerConnection();
           if(isConnected) {
 
             final scripts = await serverServices.getScripts();

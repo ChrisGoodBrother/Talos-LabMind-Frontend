@@ -2,12 +2,16 @@ import 'package:equatable/equatable.dart';
 
 abstract class ServerState extends Equatable {}
 
+class ServerConnectingState extends ServerState {
+  @override
+  List<Object?> get props => [];
+}
+
 class ServerConnectedState extends ServerState {
-  
   final List<String> scripts;
 
   ServerConnectedState(this.scripts);
-  
+
   @override
   List<Object?> get props => [scripts];
 }
