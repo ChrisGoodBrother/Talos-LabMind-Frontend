@@ -16,6 +16,7 @@ class DropDownMenu extends HookWidget {
 
     return DropdownMenu<String>(
       hintText: "Select a script",
+      requestFocusOnTap: false,
       initialSelection: "",
       enableSearch: false,
       trailingIcon: Icon(
