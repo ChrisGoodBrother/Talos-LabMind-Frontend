@@ -4,7 +4,7 @@ import 'package:lab_mind_frontend/utils/styles/colors.dart';
 ThemeData get appTheme {
   return ThemeData(
     buttonTheme: ButtonThemeData(),
-    textTheme: const TextTheme(),
+    fontFamily: "Poppins",
     useMaterial3: true,
     appBarTheme: const AppBarTheme(),
     scaffoldBackgroundColor: MyColors.appBackgroundColor,

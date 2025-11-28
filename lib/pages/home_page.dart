@@ -8,6 +8,8 @@ import 'package:lab_mind_frontend/bloc/server_connection_bloc/server_bloc.dart';
 import 'package:lab_mind_frontend/bloc/server_connection_bloc/server_event.dart';
 import 'package:lab_mind_frontend/bloc/server_connection_bloc/server_state.dart';
 import 'package:lab_mind_frontend/utils/constants/constant_strings.dart';
+import 'package:lab_mind_frontend/utils/styles/colors.dart';
+import 'package:lab_mind_frontend/widgets/app_bar.dart';
 import 'package:lab_mind_frontend/widgets/chat_box.dart';
 
 @RoutePage()
@@ -16,9 +18,9 @@ class HomePage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<DropdownMenuItem> scripts = [];
+    final List<String> scripts = [];
 
-    String selectedScript = "SOMEVALUE";
+    String selectedScript = "coder_reviewer.py";
 
     useEffect(() {
       context.read<ServerBloc>().add(CheckServerConnectionEvent());
@@ -27,77 +29,103 @@ class HomePage extends HookWidget {
     }, []);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(MAIN_TITLE_STR),
-        backgroundColor: Color.fromARGB(255, 0, 89, 255),
-      ),
-
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.only(left: 100, right: 100),
-          child: Column(
-            children: [
-              BlocBuilder<ServerBloc, ServerState>(
-                builder: (context, state) {
-                  if (state is ServerConnectingState) {
-                    return Padding(
-                      padding: EdgeInsets.only(top: 50),
-                      child: SizedBox(
-                        child: Text(
-                          SERVER_CONNECTING_STR,
-                        ),
-                      ),
-                    );
-                  }
-
-                  if (state is ServerConnectedState) {
-                    for (var script in state.scripts) {
-                      scripts.add(
-                        DropdownMenuItem(
-                          value: script,
-                          child: Text(script),
+      appBar: const AppBarGB(),
+      body: Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              MyColors.backgroundColor1,
+              MyColors.backgroundColor2,
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.only(left: 100, right: 100),
+            child: Column(
+              children: [
+                BlocBuilder<ServerBloc, ServerState>(
+                  builder: (context, state) {
+                    if (state is ServerConnectingState) {
+                      return Padding(
+                        padding: EdgeInsets.only(top: 30),
+                        child: SizedBox(
+                          child: Text(
+                            SERVER_CONNECTING_STR,
+                            style: TextStyle(
+                              color: Colors.yellow,
+                            ),
+                          ),
                         ),
                       );
                     }
 
-                    return Padding(
-                      padding: EdgeInsets.only(top: 50),
-                      child: SizedBox(
-                        child: Text(SERVER_CONNECTED_STR),
-                      ),
-                    );
-                  }
+                    if (state is ServerConnectedState) {
+                      for (var script in state.scripts) {
+                        scripts.add(script);
+                      }
 
-                  if (state is ServerDisconnectedState) {
-                    return Padding(
-                      padding: EdgeInsets.only(top: 50),
-                      child: SizedBox(
-                        child: Text(
-                          SERVER_NOT_CONNECTED_STR,
+                      return Padding(
+                        padding: EdgeInsets.only(top: 30),
+                        child: SizedBox(
+                          child: Text(
+                            SERVER_CONNECTED_STR,
+                            style: TextStyle(
+                              color: const Color.fromARGB(255, 0, 255, 8),
+                            ),
+                          ),
                         ),
-                      ),
-                    );
-                  }
+                      );
+                    }
 
-                  return Container();
-                },
-              ),
+                    if (state is ServerDisconnectedState) {
+                      return Padding(
+                        padding: EdgeInsets.only(top: 30),
+                        child: SizedBox(
+                          child: Text(
+                            SERVER_NOT_CONNECTED_STR,
+                            style: TextStyle(
+                              color: const Color.fromARGB(255, 255, 0, 0),
+                            ),
+                          ),
+                        ),
+                      );
+                    }
 
-              DropdownButton(
-                items: scripts,
-                hint: Text("Choose a script"),
-                onChanged: (value) {
-                  selectedScript = value;
-                },
-              ),
-              TextButton(
-                onPressed: () {
-                  context.read<AgentChatBloc>().add(AgentChatGetMessagesEvent(selectedScript));
-                },
-                child: Text("Run Script"),
-              ),
-              ChatBox(),
-            ],
+                    return Container();
+                  },
+                ),
+                DropdownButtonFormField<String>(
+                  items: scripts.map(
+                    (option) => DropdownMenuItem<String>(
+                      value: option,
+                      child: Text(option),
+                    )).toList(),
+                  decoration: InputDecoration(
+                    labelText: "Select a script",
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (value) {
+                    selectedScript = value!;
+                  },
+                  validator: (value) {
+                    if(value == null) {
+                      return "Select";
+                    }
+                    return null;
+                  },
+                ),
+                TextButton(
+                  onPressed: () {
+                    context.read<AgentChatBloc>().add(AgentChatGetMessagesEvent(selectedScript));
+                  },
+                  child: Text("Run Script"),
+                ),
+                ChatBox(),
+              ],
+            ),
           ),
         ),
       ),
