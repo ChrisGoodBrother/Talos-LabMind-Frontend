@@ -18,12 +18,12 @@ class ServerBloc extends Bloc<ServerEvent, ServerState> {
           if(isConnected) {
 
             final scripts = await serverServices.getScripts();
-            
+            log("Scripts: $scripts");
             emit(ServerConnectedState(scripts));
             log("Server Connected");
           } else {
             emit(ServerDisconnectedState());
-            log("Server Not Conneceted");
+            log("Server Not Connected");
           }
         } catch (e) {
           log(e.toString());

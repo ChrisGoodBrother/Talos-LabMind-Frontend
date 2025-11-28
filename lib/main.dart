@@ -11,14 +11,14 @@ void main() {
   initServicesDependencies();
   initBlocDependencies();
 
-  ServerBloc _serverBloc = GetIt.instance<ServerBloc>();
-  AgentChatBloc _agentScriptBloc = GetIt.instance<AgentChatBloc>();
+  ServerBloc serverBloc = GetIt.instance<ServerBloc>();
+  AgentChatBloc agentScriptBloc = GetIt.instance<AgentChatBloc>();
 
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider.value(value: _serverBloc),
-        BlocProvider.value(value: _agentScriptBloc),
+        BlocProvider.value(value: serverBloc),
+        BlocProvider.value(value: agentScriptBloc),
       ],
       
       child: MyApp(),

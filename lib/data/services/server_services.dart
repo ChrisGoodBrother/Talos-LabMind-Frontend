@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 class ServerServices {
-
   StreamController<String> streamController = StreamController<String>.broadcast();
   Stream<String> get stream => streamController.stream;
 
@@ -43,12 +42,10 @@ class ServerServices {
 
   Future<void> runScript(String script) async {
     if (script.isEmpty) {
-      log("no script");
-      return;
+      throw "Empty Script";
     }
 
     Dio dio = Dio(BaseOptions(baseUrl: 'http://localhost:5000'));
-    log(script);
 
     try {
       final response = await dio.post(
@@ -63,7 +60,6 @@ class ServerServices {
           'script': script,
         },
       );
-
       if (response.statusCode == 200) {
         final responseStream = response.data.stream;
 
@@ -73,13 +69,10 @@ class ServerServices {
 
           streamController.add(text);
         }
-
       }
     } catch (e) {
-      //streamController.close();
       rethrow;
     }
-    //streamController.close();
   }
 
   Future<void> stopScript() async {
@@ -89,9 +82,8 @@ class ServerServices {
       await dio.post(
         'http://localhost:5000/stop',
       );
-      //show stop signal message
     } catch (e) {
-      log("error stopping");
+      rethrow;
     }
   }
 }

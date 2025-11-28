@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:lab_mind_frontend/models/chat_message.dart';
+import 'package:lab_mind_frontend/utils/styles/colors.dart';
 
 class ChatBubble extends HookWidget {
   final ChatMessage chatMessage;
@@ -12,11 +13,20 @@ class ChatBubble extends HookWidget {
     return Container(
       padding: EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
       child: Align(
-        alignment: (chatMessage.messageType == "coder" ? Alignment.topLeft : Alignment.topRight),
+        alignment: switch (chatMessage.messageType) {
+          "coder" => Alignment.topLeft,
+          "reviewer" => Alignment.topRight,
+          _ => Alignment.topCenter,
+        },
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
-            color: (chatMessage.messageType == "coder" ? Colors.grey.shade200 : Colors.blue[200]),
+            color: switch (chatMessage.messageType) {
+              "coder" => MyColors.firstAgentMessageColor,
+              "reviewer" => MyColors.secondAgentMessageColor,
+              "system" => MyColors.systemMessageColor,
+              _ => Colors.red,
+            },
           ),
           padding: EdgeInsets.all(16),
           child: Text(

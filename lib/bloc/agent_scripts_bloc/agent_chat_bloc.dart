@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lab_mind_frontend/bloc/agent_scripts_bloc/agent_chat_event.dart';
 import 'package:lab_mind_frontend/bloc/agent_scripts_bloc/agent_chat_state.dart';
@@ -27,11 +25,14 @@ class AgentChatBloc extends Bloc<AgentChatEvent, AgentChatState> {
         );
 
         try {
-          log("start");
           await serverServices.runScript(event.script);
-          log("end");
+
+          parseAndDisplayMessages(buffer, processedMessages, emit);
+          emit(AgentChatNewMessageState(ChatMessage(message: "Execution Completed", messageType: "system")));
         } catch (e) {
-          if (!e.toString().contains('network') && !e.toString().contains('aborted')) {
+          if (e.toString() == "Empty Script") {
+            emit(AgentChatNewMessageState(ChatMessage(message: "Please Select a Script", messageType: "system")));
+          } else if (!e.toString().contains('network') && !e.toString().contains('aborted')) {
             emit(AgentChatNewMessageState(ChatMessage(message: "Error: $e", messageType: "system_error")));
           } else {
             // Connection closed normally after script finished
@@ -39,11 +40,25 @@ class AgentChatBloc extends Bloc<AgentChatEvent, AgentChatState> {
             emit(AgentChatNewMessageState(ChatMessage(message: "Execution Completed", messageType: "system")));
           }
         }
-        parseAndDisplayMessages(buffer, processedMessages, emit);
-        emit(AgentChatNewMessageState(ChatMessage(message: "Execution Completed", messageType: "system")));
 
         emit(AgentChatLoadedState());
         subscription.cancel();
+      },
+    );
+
+    on<AgentChatForceStopScriptEvent>(
+      (event, emit) async {
+        try {
+          await serverServices.stopScript();
+
+          emit(AgentChatNewMessageState(ChatMessage(message: "Agent Conversation Stopped", messageType: "system")));
+        } catch (e) {
+          if (!e.toString().contains('network') && !e.toString().contains('aborted')) {
+            emit(AgentChatNewMessageState(ChatMessage(message: "Error: $e", messageType: "system_error")));
+          }
+        }
+
+        emit(AgentChatLoadedState());
       },
     );
   }

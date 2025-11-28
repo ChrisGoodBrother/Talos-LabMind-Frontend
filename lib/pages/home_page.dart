@@ -11,6 +11,7 @@ import 'package:lab_mind_frontend/utils/constants/constant_strings.dart';
 import 'package:lab_mind_frontend/utils/styles/colors.dart';
 import 'package:lab_mind_frontend/widgets/app_bar.dart';
 import 'package:lab_mind_frontend/widgets/chat_box.dart';
+import 'package:lab_mind_frontend/widgets/drop_down_menu.dart';
 
 @RoutePage()
 class HomePage extends HookWidget {
@@ -18,9 +19,9 @@ class HomePage extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<String> scripts = [];
+    final scripts = useState<List<String>>([]);
 
-    String selectedScript = "coder_reviewer.py";
+    String selectedScript = "";
 
     useEffect(() {
       context.read<ServerBloc>().add(CheckServerConnectionEvent());
@@ -43,31 +44,46 @@ class HomePage extends HookWidget {
         ),
         child: Center(
           child: Padding(
-            padding: const EdgeInsets.only(left: 100, right: 100),
-            child: Column(
-              children: [
-                BlocBuilder<ServerBloc, ServerState>(
-                  builder: (context, state) {
-                    if (state is ServerConnectingState) {
-                      return Padding(
-                        padding: EdgeInsets.only(top: 30),
-                        child: SizedBox(
-                          child: Text(
-                            SERVER_CONNECTING_STR,
-                            style: TextStyle(
-                              color: Colors.yellow,
-                            ),
-                          ),
+            padding: const EdgeInsets.only(left: 0, right: 0),
+            child: BlocConsumer<ServerBloc, ServerState>(
+              listener: (context, state) {
+                if (state is ServerConnectedState) {
+                  scripts.value = state.scripts;
+                }
+              },
+              builder: (context, state) {
+                if (state is ServerConnectingState) {
+                  return Padding(
+                    padding: EdgeInsets.only(top: 30),
+                    child: SizedBox(
+                      child: Text(
+                        SERVER_CONNECTING_STR,
+                        style: TextStyle(
+                          color: Colors.yellow,
                         ),
-                      );
-                    }
+                      ),
+                    ),
+                  );
+                }
 
-                    if (state is ServerConnectedState) {
-                      for (var script in state.scripts) {
-                        scripts.add(script);
-                      }
+                if (state is ServerDisconnectedState) {
+                  return Padding(
+                    padding: EdgeInsets.only(top: 30),
+                    child: SizedBox(
+                      child: Text(
+                        SERVER_NOT_CONNECTED_STR,
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 255, 0, 0),
+                        ),
+                      ),
+                    ),
+                  );
+                }
 
-                      return Padding(
+                if (state is ServerConnectedState) {
+                  return Column(
+                    children: [
+                      Padding(
                         padding: EdgeInsets.only(top: 30),
                         child: SizedBox(
                           child: Text(
@@ -77,54 +93,29 @@ class HomePage extends HookWidget {
                             ),
                           ),
                         ),
-                      );
-                    }
+                      ),
+                      DropDownMenu(scripts: scripts.value, onSelected: (value) {
+                        selectedScript = value!;
+                      },),
+                      TextButton(
+                        onPressed: () {
+                          context.read<AgentChatBloc>().add(AgentChatGetMessagesEvent(selectedScript));
+                        },
+                        child: Text("Run Script"),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          context.read<AgentChatBloc>().add(AgentChatForceStopScriptEvent());
+                        },
+                        child: Text("Stop Script"),
+                      ),
+                      ChatBox(),
+                    ],
+                  );
+                }
 
-                    if (state is ServerDisconnectedState) {
-                      return Padding(
-                        padding: EdgeInsets.only(top: 30),
-                        child: SizedBox(
-                          child: Text(
-                            SERVER_NOT_CONNECTED_STR,
-                            style: TextStyle(
-                              color: const Color.fromARGB(255, 255, 0, 0),
-                            ),
-                          ),
-                        ),
-                      );
-                    }
-
-                    return Container();
-                  },
-                ),
-                DropdownButtonFormField<String>(
-                  items: scripts.map(
-                    (option) => DropdownMenuItem<String>(
-                      value: option,
-                      child: Text(option),
-                    )).toList(),
-                  decoration: InputDecoration(
-                    labelText: "Select a script",
-                    border: OutlineInputBorder(),
-                  ),
-                  onChanged: (value) {
-                    selectedScript = value!;
-                  },
-                  validator: (value) {
-                    if(value == null) {
-                      return "Select";
-                    }
-                    return null;
-                  },
-                ),
-                TextButton(
-                  onPressed: () {
-                    context.read<AgentChatBloc>().add(AgentChatGetMessagesEvent(selectedScript));
-                  },
-                  child: Text("Run Script"),
-                ),
-                ChatBox(),
-              ],
+                return Text("error");
+              },
             ),
           ),
         ),

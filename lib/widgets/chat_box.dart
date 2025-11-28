@@ -7,28 +7,33 @@ import 'package:lab_mind_frontend/models/chat_message.dart';
 import 'package:lab_mind_frontend/widgets/chat_bubble.dart';
 
 class ChatBox extends HookWidget {
-  ChatBox({super.key});
-
-  final messages = useState<List<ChatMessage>>([]);
+  const ChatBox({super.key});
 
   @override
   Widget build(BuildContext context) {
     final scrollController = ScrollController();
+    final messages = useState<List<ChatMessage>>([]);
 
-    return Expanded(
-      child: BlocConsumer<AgentChatBloc, AgentChatState>(
-        listener: (context, state) {
-          if (state is AgentChatNewMessageState) {
-            messages.value.add(state.chatMessage);
-          }
+    return BlocListener<AgentChatBloc, AgentChatState>(
+      listener: (context, state) {
+        if (state is AgentChatNewMessageState) {
+          messages.value = [...messages.value, state.chatMessage];
+        }
 
-          if (state is AgentChatEmptyChatState) {
-            messages.value.clear();
-          }
-        },
-        builder: (context, state) {
-          if (state is AgentChatEmptyChatState) {
-            return ListView.separated(
+        if (state is AgentChatEmptyChatState) {
+          messages.value.clear();
+        }
+      },
+      child: Expanded(
+        child: Padding(
+          padding: const EdgeInsets.only(bottom: 50, right: 30, left: 30, top: 30),
+          child: Container(
+            padding: const EdgeInsets.all(20.0),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.black.withValues(alpha: 0.3),
+            ),
+            child: ListView.separated(
               shrinkWrap: true,
               controller: scrollController,
               itemCount: messages.value.length,
@@ -36,26 +41,13 @@ class ChatBox extends HookWidget {
                 return SizedBox();
               },
               itemBuilder: (context, index) {
-                return Text("Select Script");
+                return ChatBubble(
+                  chatMessage: messages.value[index],
+                );
               },
-            );
-          }
-          if (state is AgentChatNewMessageState || state is AgentChatLoadedState) {
-            return ListView.separated(
-              shrinkWrap: true,
-              controller: scrollController,
-              itemCount: messages.value.length,
-              separatorBuilder: (context, index) {
-                return SizedBox();
-              },
-              itemBuilder: (context, index) {
-                return ChatBubble(chatMessage: messages.value[index]);
-              },
-            );
-          }
-
-          return Container();
-        },
+            ),
+          ),
+        ),
       ),
     );
   }

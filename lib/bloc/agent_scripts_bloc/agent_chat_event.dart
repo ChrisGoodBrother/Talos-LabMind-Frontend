@@ -23,3 +23,10 @@ class AgentChatClearChatEvent extends AgentChatEvent {
   @override
   List<Object?> get props => [];
 }
+
+class AgentChatForceStopScriptEvent extends AgentChatEvent {
+  const AgentChatForceStopScriptEvent();
+
+  @override
+  List<Object?> get props => [];
+}
