@@ -8,9 +8,13 @@ class AppBarGB extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(MAIN_TITLE_STR),
-      leading: const Image(image: AssetImage('assets/images/agent.jpg')),
-      backgroundColor: Color.fromARGB(255, 0, 89, 255),
+      title: Text(
+        MAIN_TITLE_STR,
+        style: TextStyle(
+          color: Colors.white
+        ),
+      ),
+      backgroundColor: Colors.transparent,
       centerTitle: true,
       actions: [
         Padding(
@@ -21,18 +25,6 @@ class AppBarGB extends StatelessWidget implements PreferredSizeWidget {
           ),
         ),
       ],
-      flexibleSpace: Container(
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              MyColors.appBarColor1,
-              MyColors.appBarColor2,
-            ],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
-      ),
     );
   }
 
