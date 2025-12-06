@@ -40,10 +40,12 @@ class ServerServices {
     return [];
   }
 
-  Future<void> runScript(String script) async {
-    if (script.isEmpty) {
-      throw "Empty Script";
-    }
+  Future<void> runScript(List<String> agentScripts) async {
+    // if (agent1.isEmpty || agent2.isEmpty || agent3.isEmpty) {
+    //   throw "Empty Script";
+    // }
+
+    
 
     Dio dio = Dio(BaseOptions(baseUrl: 'http://localhost:5000'));
 
@@ -57,18 +59,20 @@ class ServerServices {
           responseType: ResponseType.stream,
         ),
         data: {
-          'script': script,
+          'scripts': agentScripts,
         },
       );
       if (response.statusCode == 200) {
+        log("Running");
         final responseStream = response.data.stream;
 
         await for (final value in responseStream) {
           String text;
           text = utf8.decode(value);
-
+          log(text.toString());
           streamController.add(text);
         }
+        log("stopping");
       }
     } catch (e) {
       rethrow;
@@ -82,6 +86,8 @@ class ServerServices {
       await dio.post(
         'http://localhost:5000/stop',
       );
+
+      log("stopping");
     } catch (e) {
       rethrow;
     }

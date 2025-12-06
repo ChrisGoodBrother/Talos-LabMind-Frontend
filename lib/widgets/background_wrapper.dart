@@ -15,20 +15,20 @@ class BackgroundWrapper extends StatelessWidget {
         Container(
           decoration: BoxDecoration(
             //color: Colors.transparent,
-            image: DecorationImage(
-              image: AssetImage("assets/images/riiple.jpg"),
-              fit: BoxFit.cover,
-            ),
+            // image: DecorationImage(
+            //   image: AssetImage("assets/images/riiple.jpg"),
+            //   fit: BoxFit.cover,
+            // ),
           ),
         ),
         Container(
           decoration: BoxDecoration(
             //color: Colors.transparent,
-            image: DecorationImage(
-              image: AssetImage("assets/images/robot.png"),
-              fit: BoxFit.contain,
-              scale: 4,
-            ),
+            // image: DecorationImage(
+            //   image: AssetImage("assets/images/robot.png"),
+            //   fit: BoxFit.contain,
+            //   scale: 4,
+            // ),
           ),
         ),
         child,

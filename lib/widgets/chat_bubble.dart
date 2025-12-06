@@ -14,16 +14,16 @@ class ChatBubble extends HookWidget {
       padding: EdgeInsets.only(left: 14, right: 14, top: 10, bottom: 10),
       child: Align(
         alignment: switch (chatMessage.messageType) {
-          "coder" => Alignment.topLeft,
-          "reviewer" => Alignment.topRight,
+          "agent" => Alignment.topLeft,
+          "human" => Alignment.topRight,
           _ => Alignment.topCenter,
         },
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(20),
             color: switch (chatMessage.messageType) {
-              "coder" => MyColors.firstAgentMessageColor,
-              "reviewer" => MyColors.secondAgentMessageColor,
+              "agent" => MyColors.firstAgentMessageColor,
+              "human" => MyColors.secondAgentMessageColor,
               "system" => MyColors.systemMessageColor,
               _ => Colors.red,
             },

@@ -9,6 +9,7 @@ import 'package:lab_mind_frontend/bloc/server_connection_bloc/server_event.dart'
 import 'package:lab_mind_frontend/bloc/server_connection_bloc/server_state.dart';
 import 'package:lab_mind_frontend/utils/constants/constant_strings.dart';
 import 'package:lab_mind_frontend/utils/styles/colors.dart';
+import 'package:lab_mind_frontend/widgets/agent_creator.dart';
 import 'package:lab_mind_frontend/widgets/app_bar.dart';
 import 'package:lab_mind_frontend/widgets/background_wrapper.dart';
 import 'package:lab_mind_frontend/widgets/chat_box.dart';
@@ -22,8 +23,6 @@ class HomePage extends HookWidget {
   Widget build(BuildContext context) {
     final scripts = useState<List<String>>([]);
 
-    String selectedScript = "";
-
     useEffect(() {
       context.read<ServerBloc>().add(CheckServerConnectionEvent());
 
@@ -32,7 +31,7 @@ class HomePage extends HookWidget {
 
     return BackgroundWrapper(
       child: Scaffold(
-        backgroundColor: Colors.transparent,
+        //backgroundColor: const Color.fromARGB(255, 255, 255, 255),
         appBar: const AppBarGB(),
         body: Center(
           child: Container(
@@ -58,7 +57,7 @@ class HomePage extends HookWidget {
                       ),
                     );
                   }
-                
+
                   if (state is ServerDisconnectedState) {
                     return Padding(
                       padding: EdgeInsets.only(top: 30),
@@ -72,41 +71,62 @@ class HomePage extends HookWidget {
                       ),
                     );
                   }
-                
+
                   if (state is ServerConnectedState) {
                     return Column(
                       children: [
-                        Padding(
-                          padding: EdgeInsets.only(top: 30),
-                          child: SizedBox(
-                            child: Text(
-                              SERVER_CONNECTED_STR,
-                              style: TextStyle(
-                                color: const Color.fromARGB(255, 0, 255, 8),
-                              ),
-                            ),
+                        Text(
+                          SERVER_CONNECTED_STR,
+                          style: TextStyle(
+                            color: const Color.fromARGB(255, 0, 255, 8),
                           ),
                         ),
-                        DropDownMenu(scripts: scripts.value, onSelected: (value) {
-                          selectedScript = value!;
-                        },),
-                        TextButton(
-                          onPressed: () {
-                            context.read<AgentChatBloc>().add(AgentChatGetMessagesEvent(selectedScript));
-                          },
-                          child: Text("Run Script"),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: AgentCreator(),
+                            ),
+                            Expanded(
+                              child: AgentCreator(),
+                            ),
+                            Expanded(
+                              child: AgentCreator(),
+                            ),
+                          ],
                         ),
-                        TextButton(
-                          onPressed: () {
-                            context.read<AgentChatBloc>().add(AgentChatForceStopScriptEvent());
-                          },
-                          child: Text("Stop Script"),
+                        Expanded(
+                          child: ChatBox(),
                         ),
-                        ChatBox(),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            TextButton(
+                              onPressed: () {
+                                final selectedScripts = [
+                                  'agent1.py',
+                                  'agent2.py',
+                                  'agent3.py',
+                                ];
+                                context.read<AgentChatBloc>().add(
+                                  AgentChatGetMessagesEvent(selectedScripts),
+                                );
+                              },
+                              child: Text("Run Script"),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                context.read<AgentChatBloc>().add(
+                                  AgentChatForceStopScriptEvent(),
+                                );
+                              },
+                              child: Text("Stop Script"),
+                            ),
+                          ],
+                        ),
                       ],
                     );
                   }
-                
+
                   return Text("error");
                 },
               ),

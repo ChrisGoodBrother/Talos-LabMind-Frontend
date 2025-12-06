@@ -8,12 +8,12 @@ class AgentChatEvent extends Equatable {
 }
 
 class AgentChatGetMessagesEvent extends AgentChatEvent {
-  final String script;
+  final List<String> scripts;
 
-  const AgentChatGetMessagesEvent(this.script);
+  const AgentChatGetMessagesEvent(this.scripts);
 
   @override
-  List<Object?> get props => [script];
+  List<Object?> get props => [scripts];
 }
 
 class AgentChatClearChatEvent extends AgentChatEvent {

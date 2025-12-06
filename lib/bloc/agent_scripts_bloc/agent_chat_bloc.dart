@@ -25,7 +25,7 @@ class AgentChatBloc extends Bloc<AgentChatEvent, AgentChatState> {
         );
 
         try {
-          await serverServices.runScript(event.script);
+          await serverServices.runScript(event.scripts);
 
           parseAndDisplayMessages(buffer, processedMessages, emit);
           emit(AgentChatNewMessageState(ChatMessage(message: "Execution Completed", messageType: "system")));

@@ -51,7 +51,7 @@ void parseAndDisplayMessages(String fullText, Set<String> processedMessages, Emi
             log("Short message from $sender: $content");
           }
           if (sender != null) {
-            emit(AgentChatNewMessageState(ChatMessage(message: content, messageType: sender)));
+            emit(AgentChatNewMessageState(ChatMessage(message: content, messageType: "agent")));
           } else {
             log("sender is null");
           }
