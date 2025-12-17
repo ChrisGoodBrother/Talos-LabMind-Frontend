@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:lab_mind_frontend/data/models/agent_model.dart';
 
 class AgentChatEvent extends Equatable {
   const AgentChatEvent();
@@ -8,12 +9,13 @@ class AgentChatEvent extends Equatable {
 }
 
 class AgentChatGetMessagesEvent extends AgentChatEvent {
-  final List<String> scripts;
+  final String firstMessage;
+  final List<AgentModel> scripts;
 
-  const AgentChatGetMessagesEvent(this.scripts);
+  const AgentChatGetMessagesEvent(this.firstMessage, this.scripts);
 
   @override
-  List<Object?> get props => [scripts];
+  List<Object?> get props => [firstMessage, scripts];
 }
 
 class AgentChatClearChatEvent extends AgentChatEvent {

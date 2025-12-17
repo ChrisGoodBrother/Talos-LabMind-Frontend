@@ -8,12 +8,10 @@ import 'package:lab_mind_frontend/bloc/server_connection_bloc/server_bloc.dart';
 import 'package:lab_mind_frontend/bloc/server_connection_bloc/server_event.dart';
 import 'package:lab_mind_frontend/bloc/server_connection_bloc/server_state.dart';
 import 'package:lab_mind_frontend/utils/constants/constant_strings.dart';
-import 'package:lab_mind_frontend/utils/styles/colors.dart';
 import 'package:lab_mind_frontend/widgets/agent_creator.dart';
 import 'package:lab_mind_frontend/widgets/app_bar.dart';
 import 'package:lab_mind_frontend/widgets/background_wrapper.dart';
 import 'package:lab_mind_frontend/widgets/chat_box.dart';
-import 'package:lab_mind_frontend/widgets/drop_down_menu.dart';
 
 @RoutePage()
 class HomePage extends HookWidget {

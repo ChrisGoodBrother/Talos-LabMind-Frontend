@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:lab_mind_frontend/utils/constants/constant_strings.dart';
-import 'package:lab_mind_frontend/utils/styles/colors.dart';
 
 class AppBarGB extends StatelessWidget implements PreferredSizeWidget {
   const AppBarGB({super.key});

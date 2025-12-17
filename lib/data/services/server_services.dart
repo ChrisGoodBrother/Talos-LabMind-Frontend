@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:lab_mind_frontend/data/models/agent_model.dart';
 
 class ServerServices {
   StreamController<String> streamController = StreamController<String>.broadcast();
@@ -40,12 +41,7 @@ class ServerServices {
     return [];
   }
 
-  Future<void> runScript(List<String> agentScripts) async {
-    // if (agent1.isEmpty || agent2.isEmpty || agent3.isEmpty) {
-    //   throw "Empty Script";
-    // }
-
-    
+  Future<void> runScript(String firstMessage, List<AgentModel> agentModels) async {    
 
     Dio dio = Dio(BaseOptions(baseUrl: 'http://localhost:5000'));
 
@@ -59,7 +55,8 @@ class ServerServices {
           responseType: ResponseType.stream,
         ),
         data: {
-          'scripts': agentScripts,
+          'first_message': firstMessage,
+          'agents': agentModels,
         },
       );
       if (response.statusCode == 200) {
